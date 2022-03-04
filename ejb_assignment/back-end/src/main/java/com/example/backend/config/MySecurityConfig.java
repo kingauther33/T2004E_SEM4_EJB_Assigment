@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -40,9 +41,11 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable();
         http.authorizeHttpRequests()
-                .antMatchers("/api/v1/accounts/register", "/api/v1/accounts/login").permitAll();
+                .antMatchers("/api/v1/accounts/register", "/api/v1/accounts/login", "/api/v1/accounts").permitAll();
         http.authorizeHttpRequests().anyRequest().authenticated();
+//        http.authorizeHttpRequests().anyRequest().authenticated();
 
         http.addFilter(apiAuthenticationFilter);
+        http.addFilterBefore(new ApiAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 }
