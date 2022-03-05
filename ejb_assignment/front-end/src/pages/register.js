@@ -1,8 +1,8 @@
-import Head from 'next/head';
-import NextLink from 'next/link';
-import { useRouter } from 'next/router';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import Head from "next/head";
+import NextLink from "next/link";
+import { useRouter } from "next/router";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import {
   Box,
   Button,
@@ -11,98 +11,108 @@ import {
   FormHelperText,
   Link,
   TextField,
-  Typography
-} from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+  Typography,
+} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import axios from "axios";
+import { API } from "src/api";
+import { useUser } from "src/context/user-context";
 
 const Register = () => {
   const router = useRouter();
+
+  console.log(router);
+
+  const [userInfo, setUserInfo] = useUser();
+
   const formik = useFormik({
     initialValues: {
-      email: '',
-      firstName: '',
-      lastName: '',
-      password: '',
-      policy: false
+      email: "",
+      firstName: "",
+      lastName: "",
+      username: "",
+      password: "",
+      policy: false,
     },
     validationSchema: Yup.object({
-      email: Yup
-        .string()
-        .email(
-          'Must be a valid email')
-        .max(255)
-        .required(
-          'Email is required'),
-      firstName: Yup
-        .string()
-        .max(255)
-        .required(
-          'First name is required'),
-      lastName: Yup
-        .string()
-        .max(255)
-        .required(
-          'Last name is required'),
-      password: Yup
-        .string()
-        .max(255)
-        .required(
-          'Password is required'),
-      policy: Yup
-        .boolean()
-        .oneOf(
-          [true],
-          'This field must be checked'
-        )
+      email: Yup.string().email("Must be a valid email").max(255).required("Email is required"),
+      firstName: Yup.string().max(255).required("First name is required"),
+      lastName: Yup.string().max(255).required("Last name is required"),
+      username: Yup.string().min(4).max(255).required("Username is required"),
+      password: Yup.string().max(255).required("Password is required"),
+      policy: Yup.boolean().oneOf([true], "This field must be checked"),
     }),
-    onSubmit: () => {
-      router.push('/');
-    }
+    onSubmit: (values) => {
+      console.log(values);
+      const formData = {
+        username: values.username,
+        password: values.password,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+      };
+      axios
+        .post(API.register.url, formData, API.config)
+        .then((_) => {
+          const loginDetail = {
+            username: formData.username,
+            password: formData.password,
+          };
+          axios
+            .post(API.login.url, loginDetail, API.config)
+            .then((res) => {
+              localStorage.setItem("access_token", res["access_token"]);
+              localStorage.setItem("username", res["username"]);
+              localStorage.setItem("firstName", res["first_name"]);
+              localStorage.setItem("lastName", res["last_name"]);
+              localStorage.setItem("email", res["email"]);
+              localStorage.setItem("role", res["role"]);
+              setUserInfo({
+                accessToken: res["access_token"],
+                username: res["username"],
+                firstName: res["first_name"],
+                lastName: res["last_name"],
+                email: res["email"],
+                role: res["role"],
+              });
+              router.push("/");
+            });
+        })
+        .catch((err) => {
+          alert("Error happen, please register with another email or turn on back-end server");
+          console.error(err);
+        });
+    },
   });
 
   return (
     <>
       <Head>
-        <title>
-          Register | Material Kit
-        </title>
+        <title>Register | Material Kit</title>
       </Head>
       <Box
         component="main"
         sx={{
-          alignItems: 'center',
-          display: 'flex',
+          alignItems: "center",
+          display: "flex",
           flexGrow: 1,
-          minHeight: '100%'
+          minHeight: "100%",
         }}
       >
         <Container maxWidth="sm">
-          <NextLink
-            href="/"
-            passHref
-          >
-            <Button
-              component="a"
-              startIcon={<ArrowBackIcon fontSize="small" />}
-            >
+          {/* <NextLink href="/" passHref>
+            <Button component="a" startIcon={<ArrowBackIcon fontSize="small" />}>
               Dashboard
             </Button>
-          </NextLink>
+          </NextLink> */}
           <form onSubmit={formik.handleSubmit}>
             <Box sx={{ my: 3 }}>
-              <Typography
-                color="textPrimary"
-                variant="h4"
-              >
+              <Typography color="textPrimary" variant="h4">
                 Create a new account
               </Typography>
-              <Typography
-                color="textSecondary"
-                gutterBottom
-                variant="body2"
-              >
+              {/* <Typography color="textSecondary" gutterBottom variant="body2">
                 Use your email to create a new account
-              </Typography>
+              </Typography> */}
             </Box>
             <TextField
               error={Boolean(formik.touched.firstName && formik.errors.firstName)}
@@ -142,6 +152,19 @@ const Register = () => {
               variant="outlined"
             />
             <TextField
+              error={Boolean(formik.touched.username && formik.errors.username)}
+              fullWidth
+              helperText={formik.touched.username && formik.errors.username}
+              label="Username"
+              margin="normal"
+              name="username"
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              type="username"
+              value={formik.values.username}
+              variant="outlined"
+            />
+            <TextField
               error={Boolean(formik.touched.password && formik.errors.password)}
               fullWidth
               helperText={formik.touched.password && formik.errors.password}
@@ -156,9 +179,9 @@ const Register = () => {
             />
             <Box
               sx={{
-                alignItems: 'center',
-                display: 'flex',
-                ml: -1
+                alignItems: "center",
+                display: "flex",
+                ml: -1,
               }}
             >
               <Checkbox
@@ -166,30 +189,17 @@ const Register = () => {
                 name="policy"
                 onChange={formik.handleChange}
               />
-              <Typography
-                color="textSecondary"
-                variant="body2"
-              >
-                I have read the
-                {' '}
-                <NextLink
-                  href="#"
-                  passHref
-                >
-                  <Link
-                    color="primary"
-                    underline="always"
-                    variant="subtitle2"
-                  >
+              <Typography color="textSecondary" variant="body2">
+                I have read the{" "}
+                <NextLink href="#" passHref>
+                  <Link color="primary" underline="always" variant="subtitle2">
                     Terms and Conditions
                   </Link>
                 </NextLink>
               </Typography>
             </Box>
             {Boolean(formik.touched.policy && formik.errors.policy) && (
-              <FormHelperText error>
-                {formik.errors.policy}
-              </FormHelperText>
+              <FormHelperText error>{formik.errors.policy}</FormHelperText>
             )}
             <Box sx={{ py: 2 }}>
               <Button
@@ -203,20 +213,10 @@ const Register = () => {
                 Sign Up Now
               </Button>
             </Box>
-            <Typography
-              color="textSecondary"
-              variant="body2"
-            >
-              Have an account?
-              {' '}
-              <NextLink
-                href="/login"
-                passHref
-              >
-                <Link
-                  variant="subtitle2"
-                  underline="hover"
-                >
+            <Typography color="textSecondary" variant="body2">
+              Have an account?{" "}
+              <NextLink href="/login" passHref>
+                <Link variant="subtitle2" underline="hover">
                   Sign In
                 </Link>
               </NextLink>

@@ -27,7 +27,6 @@ public class ApiAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         LOGGER.log(Level.WARNING, "doing filter");
         LOGGER.log(Level.WARNING, request.getServletPath());
-
         if (request.getServletPath().equals("/api/v1/accounts/login")
                 || request.getServletPath().equals("/api/v1/accounts/register")
                 || request.getServletPath().equals("/api/v1/accounts/get")
