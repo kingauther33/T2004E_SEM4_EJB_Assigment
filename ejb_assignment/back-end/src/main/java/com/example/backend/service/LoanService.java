@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class LoanService {
@@ -21,6 +22,14 @@ public class LoanService {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    public List<Loan> findAll() {
+        return loanRepository.findAll();
+    }
+
+    public Loan findByAccount(Account account) {
+        return loanRepository.findFirstByAccount(account);
+    }
 
     public Loan create(LoanDto loanDto) {
         // lấy approvedDate = today + 3 days;
@@ -34,6 +43,9 @@ public class LoanService {
         String currentPrincipalName = authentication.getName();
 
         Account account = accountRepository.findFirstByUsername(currentPrincipalName).orElse(null);
+
+        // set thêm balance cho user khi loan được tạo
+        // account.setBalance(account.getBalance() + loanDto.getAmount());
 
         Loan loan = new Loan();
         loan.setAmount(loanDto.getAmount());

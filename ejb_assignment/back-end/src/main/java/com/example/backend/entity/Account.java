@@ -1,7 +1,7 @@
 package com.example.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -11,11 +11,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "accounts")
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
     private String username;
@@ -36,12 +40,17 @@ public class Account {
     private Date updatedAt;
 
     @OneToMany(mappedBy = "accountSender")
+    @JsonManagedReference
     private Set<Transaction> transactionSenderSet = new HashSet<>();
 
     @OneToMany(mappedBy = "accountReceiver")
+    @JsonManagedReference
     private Set<Transaction> transactionReceiverSet = new HashSet<>();
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private Set<Loan> loanSet = new HashSet<>();
+//    @OneToMany(mappedBy = "account")
+//    @JsonManagedReference
+//    private Set<Loan> loanSet = new HashSet<>();
+
+    @OneToOne(mappedBy = "account")
+    private Loan loan;
 }

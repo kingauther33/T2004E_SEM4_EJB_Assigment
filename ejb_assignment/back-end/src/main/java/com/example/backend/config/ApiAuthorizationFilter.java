@@ -30,7 +30,8 @@ public class ApiAuthorizationFilter extends OncePerRequestFilter {
 
         if (request.getServletPath().equals("/api/v1/accounts/login")
                 || request.getServletPath().equals("/api/v1/accounts/register")
-                || request.getServletPath().equals("/api/v1/accounts/get")) {
+                || request.getServletPath().equals("/api/v1/accounts/get")
+                || request.getServletPath().equals("/api/v1/transactions/get")) {
             filterChain.doFilter(request, response);
             return;
         }

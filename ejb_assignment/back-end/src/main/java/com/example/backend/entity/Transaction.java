@@ -1,11 +1,10 @@
 package com.example.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedBy;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -20,15 +19,8 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "senderId", insertable = false, updatable = false)
-    private Integer senderId;
-
-    @Column(name = "receiverId", insertable = false, updatable = false)
-    private Integer receiverId;
-
     private double amount;
     private String message;
-
     private Integer status;
 
     @CreationTimestamp
@@ -36,14 +28,20 @@ public class Transaction {
     @UpdateTimestamp
     private Date updatedAt;
 
+    @Column(name = "senderId", insertable = false, updatable = false)
+    private Integer senderId;
+
+    @Column(name = "receiverId", insertable = false, updatable = false)
+    private Integer receiverId;
+
     @ManyToOne
     @JoinColumn(name="senderId", referencedColumnName = "id", nullable = false)
-    @JsonIgnore
+    @JsonBackReference
     Account accountSender;
 
     @ManyToOne
     @JoinColumn(name="receiverId", referencedColumnName = "id", nullable = false)
-    @JsonIgnore
+    @JsonBackReference
     Account accountReceiver;
 
 }
