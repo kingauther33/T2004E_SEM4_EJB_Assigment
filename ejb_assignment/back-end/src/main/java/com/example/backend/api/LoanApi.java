@@ -39,11 +39,12 @@ public class LoanApi {
 
     @RequestMapping(path = "approve", method = RequestMethod.POST)
     public ResponseEntity<Object> approve(@RequestBody LoanDto loanDto) {
-        Loan loan = loanService.create(loanDto);
-        HashMap<String, Date> response = new HashMap<>();
-        response.put("approvedDate", loan.getApprovedDate());
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+//        Loan loan = loanService.create(loanDto);
+//        HashMap<String, Date> response = new HashMap<>();
+//        response.put("approvedDate", loan.getApprovedDate());
+//
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
     @RequestMapping(path = "", method = RequestMethod.GET)

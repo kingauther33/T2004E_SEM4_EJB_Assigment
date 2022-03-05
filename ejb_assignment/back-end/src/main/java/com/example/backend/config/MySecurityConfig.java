@@ -42,8 +42,10 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.authorizeHttpRequests()
                 .antMatchers("/api/v1/accounts/register", "/api/v1/accounts/login").permitAll();
+
+        // API TEST findAll()
         http.authorizeHttpRequests()
-                .antMatchers("/api/v1/accounts/get", "/api/v1/transactions/get").permitAll();
+                .antMatchers("/api/v1/accounts/get", "/api/v1/transactions/get", "/api/v1/loans/get").permitAll();
         http.authorizeHttpRequests().anyRequest().authenticated();
 //        http.authorizeHttpRequests().anyRequest().authenticated();
 

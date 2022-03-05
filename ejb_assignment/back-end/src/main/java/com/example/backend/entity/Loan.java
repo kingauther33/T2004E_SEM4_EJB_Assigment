@@ -23,7 +23,7 @@ public class Loan {
     @Column(name = "id")
     private Integer id;
 
-    private double amount;
+    private Double amount;
     private double tenure = 12;
     private double rate = 5;
 
