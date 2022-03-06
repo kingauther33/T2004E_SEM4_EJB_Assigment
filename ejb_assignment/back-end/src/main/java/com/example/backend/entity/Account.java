@@ -47,6 +47,10 @@ public class Account {
     @JsonManagedReference
     private Set<Transaction> transactionReceiverSet = new HashSet<>();
 
+    @OneToMany(mappedBy = "accountLog", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private Set<Log> logSet = new HashSet<>();
+
 //    @OneToMany(mappedBy = "account")
 //    @JsonManagedReference
 //    private Set<Loan> loanSet = new HashSet<>();

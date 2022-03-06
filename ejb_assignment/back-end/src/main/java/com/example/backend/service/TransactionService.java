@@ -2,8 +2,10 @@ package com.example.backend.service;
 
 import com.example.backend.dto.TransactionDto;
 import com.example.backend.entity.Account;
+import com.example.backend.entity.Log;
 import com.example.backend.entity.Transaction;
 import com.example.backend.repository.AccountRepository;
+import com.example.backend.repository.LogRepository;
 import com.example.backend.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -21,6 +23,9 @@ public class TransactionService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private LogRepository logRepository;
+
     public List<Transaction> findAll() {
         return transactionRepository.findAll();
     }
@@ -33,14 +38,30 @@ public class TransactionService {
 
         // lấy ra tài khoản nhận
         Account receiverAccount = accountRepository.findFirstByUsername(transactionDto.getBeneficiaryName()).orElse(null);
+        assert receiverAccount != null;
+
+        double transactionAmount = transactionDto.getAmount();
+        assert senderAccount != null;
+        if (senderAccount.getBalance() < transactionAmount) {
+            throw new RuntimeException("Cannot execute this function");
+        }
+        senderAccount.setBalance(senderAccount.getBalance() - transactionAmount);
+        receiverAccount.setBalance(receiverAccount.getBalance() + transactionAmount);
 
         Transaction transaction = new Transaction();
-        transaction.setAmount(transactionDto.getAmount());
+        transaction.setAmount(transactionAmount);
         transaction.setMessage(transactionDto.getMessage());
         transaction.setStatus(1);
         transaction.setAccountSender(senderAccount);
         transaction.setAccountReceiver(receiverAccount);
 
+        // add vao bảng Log để in ra bank statement
+        Log log = new Log();
+        log.setAmount(transactionAmount);
+        log.setType("TRANSACTION");
+        log.setAccountLog(senderAccount);
+
+        logRepository.save(log);
         return transactionRepository.save(transaction);
     }
 }
