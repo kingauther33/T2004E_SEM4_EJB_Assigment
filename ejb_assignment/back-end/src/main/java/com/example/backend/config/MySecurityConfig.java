@@ -14,9 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -44,7 +42,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         // add authentication filter
 
-        ApiAuthenticationFilter apiAuthenticationFilter = new ApiAuthenticationFilter(authenticationManagerBean());
+        ApiAuthenticationFilter apiAuthenticationFilter = new ApiAuthenticationFilter(authenticationManagerBean(), getApplicationContext());
         apiAuthenticationFilter.setFilterProcessesUrl("/api/v1/accounts/login");
 
         http.cors().configurationSource(request -> {
@@ -54,8 +52,8 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
             cors.setAllowedHeaders(Collections.singletonList("*"));
             return cors;
         });
-
         http.csrf().disable();
+
         http.authorizeHttpRequests()
                 .antMatchers("/api/v1/accounts/register", "/api/v1/accounts/login").permitAll();
 

@@ -18,6 +18,21 @@ import { NavItem } from "./nav-item";
 
 const items = [
   {
+    href: "/transaction",
+    icon: <ChartBarIcon fontSize="small" />,
+    title: "Transaction",
+  },
+  {
+    href: "/loan",
+    icon: <ChartBarIcon fontSize="small" />,
+    title: "Loan",
+  },
+  {
+    href: "/statement",
+    icon: <ChartBarIcon fontSize="small" />,
+    title: "Statement",
+  },
+  {
     href: "/",
     icon: <ChartBarIcon fontSize="small" />,
     title: "Dashboard",

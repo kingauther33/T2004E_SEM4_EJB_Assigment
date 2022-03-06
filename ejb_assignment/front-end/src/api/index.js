@@ -12,4 +12,7 @@ export const API = {
   login: {
     url: BASE_URL + "accounts/login",
   },
+  getAccount: {
+    url: BASE_URL + "accounts",
+  },
 };

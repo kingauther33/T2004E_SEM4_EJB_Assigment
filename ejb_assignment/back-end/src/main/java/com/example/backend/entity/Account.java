@@ -39,11 +39,11 @@ public class Account {
     @UpdateTimestamp
     private Date updatedAt;
 
-    @OneToMany(mappedBy = "accountSender")
+    @OneToMany(mappedBy = "accountSender", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference
     private Set<Transaction> transactionSenderSet = new HashSet<>();
 
-    @OneToMany(mappedBy = "accountReceiver")
+    @OneToMany(mappedBy = "accountReceiver", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference
     private Set<Transaction> transactionReceiverSet = new HashSet<>();
 

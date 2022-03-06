@@ -16,14 +16,12 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
 import { API } from "src/api";
-import { useUser } from "src/context/user-context";
+import { addToLocalStorage } from "src/utils/add-to-localstorage";
+import { useUser } from "src/providers/user-context";
 
 const Register = () => {
+  const { setUserInfo } = useUser();
   const router = useRouter();
-
-  console.log(router);
-
-  const [userInfo, setUserInfo] = useUser();
 
   const formik = useFormik({
     initialValues: {
@@ -58,25 +56,10 @@ const Register = () => {
             username: formData.username,
             password: formData.password,
           };
-          axios
-            .post(API.login.url, loginDetail, API.config)
-            .then((res) => {
-              localStorage.setItem("access_token", res["access_token"]);
-              localStorage.setItem("username", res["username"]);
-              localStorage.setItem("firstName", res["first_name"]);
-              localStorage.setItem("lastName", res["last_name"]);
-              localStorage.setItem("email", res["email"]);
-              localStorage.setItem("role", res["role"]);
-              setUserInfo({
-                accessToken: res["access_token"],
-                username: res["username"],
-                firstName: res["first_name"],
-                lastName: res["last_name"],
-                email: res["email"],
-                role: res["role"],
-              });
-              router.push("/");
-            });
+          axios.post(API.login.url, loginDetail, API.config).then((res) => {
+            const { data } = res;
+            addToLocalStorage(data, setUserInfo, router);
+          });
         })
         .catch((err) => {
           alert("Error happen, please register with another email or turn on back-end server");

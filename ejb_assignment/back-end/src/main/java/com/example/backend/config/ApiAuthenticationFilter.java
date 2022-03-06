@@ -7,6 +7,7 @@ import com.example.backend.repository.AccountRepository;
 import com.example.backend.service.AccountService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,11 +32,11 @@ public class ApiAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private AccountService accountService;
+    private final AccountService accountService;
 
-    public ApiAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public ApiAuthenticationFilter(AuthenticationManager authenticationManager, ApplicationContext ctx) {
         this.authenticationManager = authenticationManager;
+        this.accountService = ctx.getBean(AccountService.class);
     }
 
     static Logger LOGGER = Logger.getLogger(ApiAuthorizationFilter.class.getName());
@@ -77,7 +78,7 @@ public class ApiAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         Optional<Account> optionalAccount = accountService.findByUserName(username);
         if (!optionalAccount.isPresent()) {
-            response.getWriter().println("DOG SHIT");
+            response.getWriter().println("Error");
         }
 
         Account account = optionalAccount.get();
@@ -88,6 +89,7 @@ public class ApiAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         map.put("first_name", account.getFirstName());
         map.put("last_name", account.getLastName());
         map.put("email", account.getLastName());
+        map.put("balance", String.valueOf(account.getBalance()));
         map.put("role", userRole);
         response.setContentType("application/json");
         response.getWriter().println(new Gson().toJson(map));

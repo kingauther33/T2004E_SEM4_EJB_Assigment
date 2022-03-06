@@ -6,7 +6,7 @@ import { CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { createEmotionCache } from "../utils/create-emotion-cache";
 import { theme } from "../theme";
-import UserContextProvider from "src/context/user-context";
+import UserContextProvider from "src/providers/user-context";
 import { useRouter } from "next/router";
 
 const clientSideEmotionCache = createEmotionCache();
