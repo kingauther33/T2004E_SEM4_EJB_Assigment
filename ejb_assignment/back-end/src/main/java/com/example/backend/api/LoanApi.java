@@ -14,6 +14,7 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -23,50 +24,51 @@ public class LoanApi {
     @Autowired
     private LoanService loanService;
 
-    @Autowired
-    private AccountService accountService;
-
-    @RequestMapping(path = "", method = RequestMethod.POST)
-    public ResponseEntity<Object> create(@RequestBody LoanDto loanDto) {
-        Loan loan = loanService.create(loanDto);
-        HashMap<String, Date> response = new HashMap<>();
-        response.put("approvedDate", loan.getApprovedDate());
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @RequestMapping(path = "approve", method = RequestMethod.POST)
-    public ResponseEntity<Object> approve(@RequestBody LoanDto loanDto) {
-//        Loan loan = loanService.create(loanDto);
-//        HashMap<String, Date> response = new HashMap<>();
-//        response.put("approvedDate", loan.getApprovedDate());
-//
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-        return new ResponseEntity<>(null, HttpStatus.OK);
-    }
-
-    @RequestMapping(path = "", method = RequestMethod.GET)
+    // đầu API cho admin
+    @RequestMapping(path = "find_all", method = RequestMethod.GET)
     public ResponseEntity<Object> findAll() {
         List<Loan> loanList = loanService.findAll();
 
         return new ResponseEntity<>(loanList, HttpStatus.OK);
     }
 
+    @RequestMapping(path = "approve", method = RequestMethod.POST)
+    public ResponseEntity<Object> approve(@RequestBody int loanId) {
+        Loan loan = loanService.approve(loanId);
+
+        if (loan == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(loan, HttpStatus.OK);
+    }
+
+    // API cho user
+    @RequestMapping(path = "check_approve", method = RequestMethod.POST)
+    public ResponseEntity<Object> checkApprove(Principal principal) {
+        Loan loan = loanService.checkApprove(principal.getName());
+
+        if (loan == null) {
+            return new ResponseEntity<>("Cannot find any loan", HttpStatus.NOT_FOUND);
+        }
+
+        if (loan.getStatus().equals("PROCESSING")) {
+            return new ResponseEntity<>(loan.getApprovedDate(), HttpStatus.PROCESSING);
+        }
+
+        return new ResponseEntity<>(loan, HttpStatus.OK);
+    }
+
+    @RequestMapping(path = "", method = RequestMethod.POST)
+    public ResponseEntity<Object> create(@RequestBody LoanDto loanDto) {
+        Loan loan = loanService.create(loanDto);
+
+        return new ResponseEntity<>(loan.getApprovedDate(), HttpStatus.OK);
+    }
 
     @RequestMapping(path = "calculate", method = RequestMethod.POST)
     public ResponseEntity<Object> calculate(Principal principal) {
-        String username = principal.getName();
-        Account loggedInAccount = accountService.findByUserName(username).orElse(null);
-
-        Loan existedLoan = loanService.findByAccount(loggedInAccount);
-
-        double amount = existedLoan.getAmount();
-        double tenure = existedLoan.getTenure();
-        double rate = existedLoan.getRate() / (100 * 12);
-
-        double exponential = Math.pow((1 + rate), tenure);
-
-        double amountPerMonth = amount * (rate * exponential / (exponential - 1));
+        double amountPerMonth = loanService.calculate(principal.getName());
 
         return new ResponseEntity<>(amountPerMonth, HttpStatus.OK);
     }

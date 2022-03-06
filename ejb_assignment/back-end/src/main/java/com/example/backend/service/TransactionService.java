@@ -43,7 +43,7 @@ public class TransactionService {
         double transactionAmount = transactionDto.getAmount();
         assert senderAccount != null;
         if (senderAccount.getBalance() < transactionAmount) {
-            throw new RuntimeException("Cannot execute this function");
+            return null;
         }
         senderAccount.setBalance(senderAccount.getBalance() - transactionAmount);
         receiverAccount.setBalance(receiverAccount.getBalance() + transactionAmount);

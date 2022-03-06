@@ -27,7 +27,7 @@ public class Loan {
     private double tenure = 12;
     private double rate = 5;
 
-    private Integer status;
+    private String status; // PROCESSING, APPROVED
     private Date approvedDate;
 
     @CreationTimestamp

@@ -27,8 +27,37 @@ public class LoanService {
         return loanRepository.findAll();
     }
 
-    public Loan findByAccount(Account account) {
-        return loanRepository.findFirstByAccount(account);
+    public Loan checkApprove(String username) {
+        Account account = accountRepository.findFirstByUsername(username).orElse(null);
+        Loan loan = loanRepository.findFirstByAccount(account);
+
+        return loan;
+    }
+
+    public Loan approve(int loanId) {
+        Loan loan = loanRepository.findById(loanId).orElse(null);
+        if (loan == null) {
+            return null;
+        }
+
+        loan.setStatus("APPROVED");
+        Account account = loan.getAccount();
+        account.setBalance(account.getBalance() + loan.getAmount());
+
+        return loanRepository.save(loan);
+    }
+
+    public double calculate(String username) {
+        Account account = accountRepository.findFirstByUsername(username).orElse(null);
+        Loan existedLoan = loanRepository.findFirstByAccount(account);
+
+        double amount = existedLoan.getAmount();
+        double tenure = existedLoan.getTenure();
+        double rate = existedLoan.getRate() / (100 * 12);
+        double exponential = Math.pow((1 + rate), tenure);
+        double amountPerMonth = amount * (rate * exponential / (exponential - 1));
+
+        return amountPerMonth;
     }
 
     public Loan create(LoanDto loanDto) {
@@ -44,14 +73,11 @@ public class LoanService {
 
         Account account = accountRepository.findFirstByUsername(currentPrincipalName).orElse(null);
 
-        // set thêm balance cho user khi loan được tạo
-        // account.setBalance(account.getBalance() + loanDto.getAmount());
-
         Loan loan = new Loan();
         loan.setAmount(loanDto.getAmount());
         loan.setRate(loanDto.getRate());
         loan.setTenure(loanDto.getTenure());
-        loan.setStatus(1);
+        loan.setStatus("PROCESSING");
         loan.setApprovedDate(approvedDate);
         loan.setAccount(account);
 
