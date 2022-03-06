@@ -15,26 +15,29 @@ import { Users as UsersIcon } from "../icons/users";
 import { XCircle as XCircleIcon } from "../icons/x-circle";
 import { Logo } from "./logo";
 import { NavItem } from "./nav-item";
+import PaidIcon from "@mui/icons-material/Paid";
+import ReceiptIcon from "@mui/icons-material/Receipt";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
 
 const items = [
   {
     href: "/transaction",
-    icon: <ChartBarIcon fontSize="small" />,
+    icon: <PaidIcon fontSize="small" />,
     title: "Transaction",
   },
   {
     href: "/loan",
-    icon: <ChartBarIcon fontSize="small" />,
+    icon: <CreditCardIcon fontSize="small" />,
     title: "Loan",
   },
   {
-    href: "/statement",
-    icon: <ChartBarIcon fontSize="small" />,
-    title: "Statement",
+    href: "/bank-statement",
+    icon: <ReceiptIcon fontSize="small" />,
+    title: "Bank Statement",
   },
   {
     href: "/",
-    icon: <ChartBarIcon fontSize="small" />,
+    icon: <ChartBarIcon />,
     title: "Dashboard",
   },
   {

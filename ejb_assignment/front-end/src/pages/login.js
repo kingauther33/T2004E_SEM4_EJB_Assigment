@@ -26,12 +26,12 @@ const Login = () => {
       username: Yup.string().min(4).max(255).required("Username is required"),
       password: Yup.string().max(255).required("Password is required"),
     }),
-    onSubmit: (values, helperFunc) => {
+    onSubmit: async (values, helperFunc) => {
       const formData = {
         username: values.username,
         password: values.password,
       };
-      axios
+      await axios
         .post(API.login.url, formData, API.config)
         .then((res) => {
           const { data } = res;

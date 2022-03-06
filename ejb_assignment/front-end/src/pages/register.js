@@ -40,7 +40,7 @@ const Register = () => {
       password: Yup.string().max(255).required("Password is required"),
       policy: Yup.boolean().oneOf([true], "This field must be checked"),
     }),
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       console.log(values);
       const formData = {
         username: values.username,
@@ -49,7 +49,7 @@ const Register = () => {
         lastName: values.lastName,
         email: values.email,
       };
-      axios
+      await axios
         .post(API.register.url, formData, API.config)
         .then((_) => {
           const loginDetail = {

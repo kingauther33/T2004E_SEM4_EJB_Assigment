@@ -1,9 +1,13 @@
 const BASE_URL = "http://localhost:8080/api/v1/";
 
+const accessToken = typeof window != "undefined" && localStorage.getItem("access_token");
+console.log(accessToken);
+
 export const API = {
   config: {
     headers: {
       "Access-Control-Allow-Origin": "*",
+      Authorization: accessToken,
     },
   },
   register: {
@@ -14,5 +18,11 @@ export const API = {
   },
   getAccount: {
     url: BASE_URL + "accounts",
+  },
+  createTracsaction: {
+    url: BASE_URL + "transactions",
+  },
+  getLogs: {
+    url: BASE_URL + "logs",
   },
 };
