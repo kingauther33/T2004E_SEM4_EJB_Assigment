@@ -32,9 +32,9 @@ public class LoanApi {
         return new ResponseEntity<>(loanList, HttpStatus.OK);
     }
 
-    @RequestMapping(path = "approve", method = RequestMethod.POST)
-    public ResponseEntity<Object> approve(@RequestBody int loanId) {
-        Loan loan = loanService.approve(loanId);
+    @RequestMapping(path = "approve/{id}", method = RequestMethod.POST)
+    public ResponseEntity<Object> approve(@PathVariable int id) {
+        Loan loan = loanService.approve(id);
 
         if (loan == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);

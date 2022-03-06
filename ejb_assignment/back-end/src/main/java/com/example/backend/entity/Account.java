@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -47,9 +48,13 @@ public class Account {
     @JsonManagedReference
     private Set<Transaction> transactionReceiverSet = new HashSet<>();
 
-    @OneToMany(mappedBy = "accountLog", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "senderAccountLog", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference
-    private Set<Log> logSet = new HashSet<>();
+    private Set<Log> senderLogSet = new HashSet<>();
+
+    @OneToMany(mappedBy = "receiverAccountLog", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private Set<Log> receiverLogSet = new HashSet<>();
 
 //    @OneToMany(mappedBy = "account")
 //    @JsonManagedReference

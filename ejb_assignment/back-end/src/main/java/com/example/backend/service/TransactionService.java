@@ -59,7 +59,8 @@ public class TransactionService {
         Log log = new Log();
         log.setAmount(transactionAmount);
         log.setType("TRANSACTION");
-        log.setAccountLog(senderAccount);
+        log.setSenderAccountLog(senderAccount);
+        log.setReceiverAccountLog(receiverAccount);
 
         logRepository.save(log);
         return transactionRepository.save(transaction);

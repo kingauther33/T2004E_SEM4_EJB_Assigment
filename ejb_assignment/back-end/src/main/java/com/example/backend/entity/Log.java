@@ -2,6 +2,7 @@ package com.example.backend.entity;
 
 import com.example.backend.entity.Account;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,11 +32,19 @@ public class Log {
     @UpdateTimestamp
     private Date updatedAt;
 
-    @Column(name = "accountId", insertable = false, updatable = false)
-    private Integer accountId;
+    @Column(name = "senderId", insertable = false, updatable = false)
+    private Integer senderId;
 
     @ManyToOne
-    @JoinColumn(name = "accountId", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "senderId", referencedColumnName = "id", nullable = false)
     @JsonBackReference
-    private Account accountLog;
+    private Account senderAccountLog;
+
+    @Column(name = "receiverId", insertable = false, updatable = false)
+    private Integer receiverId;
+
+    @ManyToOne
+    @JoinColumn(name = "receiverId", referencedColumnName = "id")
+    @JsonBackReference
+    private Account receiverAccountLog;
 }

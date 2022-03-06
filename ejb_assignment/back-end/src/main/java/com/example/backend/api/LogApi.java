@@ -27,6 +27,6 @@ public class LogApi {
             return new ResponseEntity<>("Couldn't find log", HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(logList, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(logList, HttpStatus.OK);
     }
 }

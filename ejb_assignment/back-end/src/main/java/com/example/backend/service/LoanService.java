@@ -3,8 +3,10 @@ package com.example.backend.service;
 import com.example.backend.dto.LoanDto;
 import com.example.backend.entity.Account;
 import com.example.backend.entity.Loan;
+import com.example.backend.entity.Log;
 import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.LoanRepository;
+import com.example.backend.repository.LogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +24,9 @@ public class LoanService {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private LogRepository logRepository;
 
     public List<Loan> findAll() {
         return loanRepository.findAll();
@@ -43,6 +48,12 @@ public class LoanService {
         loan.setStatus("APPROVED");
         Account account = loan.getAccount();
         account.setBalance(account.getBalance() + loan.getAmount());
+
+        Log log = new Log();
+        log.setAmount(loan.getAmount());
+        log.setType("LOAN");
+        log.setSenderAccountLog(account);
+        logRepository.save(log);
 
         return loanRepository.save(loan);
     }
