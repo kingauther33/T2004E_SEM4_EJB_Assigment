@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { DashboardLayout } from "src/components/dashboard-layout";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
@@ -34,46 +34,57 @@ import axios from "axios";
 const Loan = ({ ...rest }) => {
   const { userInfo, setUserInfo } = useUser();
   const { API } = useAPI();
+  const [isLoading, setIsLoading] = useState(true);
+  const [loanState, setLoanState] = useState(0);
+  const [loanData, setLoanData] = useState(null);
+  // 0: NOT FOUND (404); 1: tìm thấy nhưng chưa approve (400); 2: tìm thấy và được approve (200)
+
+  const fetchLoan = useCallback(async () => {
+    await axios
+      .get(API.checkApproveLoan.url, API.config)
+      .then((res) => {
+        console.log(res);
+        setIsLoading(false);
+        setLoanState(2);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        if (error.response.status === 400) {
+          console.log(error.response.data);
+          setLoanState(1);
+        }
+        console.log(error);
+      });
+  }, [API.checkApproveLoan.url, API.config]);
 
   const formik = useFormik({
     initialValues: {
-      beneficiaryName: "",
       amount: "",
-      message: "",
+      tenure: "",
     },
     validationSchema: Yup.object({
-      beneficiaryName: Yup.string()
-        .min(4, "Benefiacry Name must have at least 4 characters")
-        .max(255)
-        .required("Beneficiary name is required"),
       amount: Yup.number()
         .typeError("Must be number")
         .min(1, "Amount must be greater than 1")
         .max(50000, "Amount must be smaller than 50000")
         .required("Amount is required"),
-      message: Yup.string()
-        .min(4, "Min 4 characters")
-        .max(255, "Maximum 255 characters")
-        .required("Message is reuiqred"),
+      tenure: Yup.number()
+        .typeError("Must be number")
+        .min(1, "Amount must be greater than 1")
+        .max(50000, "Amount must be smaller than 50000")
+        .required("Amount is required"),
     }),
     onSubmit: async (values, helperFunc) => {
       const formData = {
-        beneficiaryName: values.beneficiaryName,
         amount: values.amount,
-        message: values.message,
+        message: values.tenure,
       };
 
-      console.log(API.config.headers);
-
       await axios
-        .post(API.createTracsaction.url, formData, API.config)
+        .post(API.createLoan.url, formData, API.config)
         .then((res) => {
-          console.log(res);
-          alert("Please go to Bank Statement to get values");
           // update userInfo khi ckhoan thanh cong
-          const newBalance = +userInfo.balance - +formData.amount;
-          localStorage.setItem("balance", newBalance);
-          setUserInfo((api) => ({ ...userInfo, balance: newBalance }));
+          console.log(res);
 
           helperFunc.setSubmitting(false);
         })
@@ -85,10 +96,16 @@ const Loan = ({ ...rest }) => {
     },
   });
 
+  useEffect(() => {
+    console.log(API.checkApproveLoan.url);
+
+    API.config.headers.Authorization && fetchLoan();
+  }, [API, fetchLoan]);
+
   return (
     <>
       <Head>
-        <title>Dashboard | Material Kit</title>
+        <title>Loan</title>
       </Head>
       <Box
         component="main"
@@ -98,76 +115,71 @@ const Loan = ({ ...rest }) => {
         }}
       >
         <Container maxWidth={false}>
-          <form onSubmit={formik.handleSubmit}>
-            <Card>
-              <CardHeader subheader="Transfer to another account" title="Transfer" />
-              <CardContent>
-                <Grid container spacing={3}>
-                  <Grid item md={6} xs={12}>
-                    <TextField
-                      error={Boolean(
-                        formik.touched.beneficiaryName && formik.errors.beneficiaryName
-                      )}
-                      fullWidth
-                      helperText={formik.touched.beneficiaryName && formik.errors.beneficiaryName}
-                      label="Beneficiary Name"
-                      margin="normal"
-                      name="beneficiaryName"
-                      onBlur={formik.handleBlur}
-                      onChange={formik.handleChange}
-                      type="beneficiaryName"
-                      value={formik.values.beneficiaryName}
-                      variant="outlined"
-                    />
+          {isLoading ? (
+            "Loading ..."
+          ) : loanState === 0 ? (
+            <form onSubmit={formik.handleSubmit}>
+              <Card>
+                <CardHeader subheader="Request to get loan" title="Loan request" />
+                <CardContent>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                      <Typography variant="subtitle2">Current rate: 5%</Typography>
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                      <TextField
+                        sx={{ margin: 0 }}
+                        error={Boolean(formik.touched.amount && formik.errors.amount)}
+                        fullWidth
+                        helperText={formik.touched.amount && formik.errors.amount}
+                        label="Amount"
+                        margin="normal"
+                        name="amount"
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        type="amount"
+                        value={formik.values.amount}
+                        variant="outlined"
+                      />
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                      <TextField
+                        sx={{ margin: 0 }}
+                        error={Boolean(formik.touched.tenure && formik.errors.tenure)}
+                        fullWidth
+                        helperText={formik.touched.tenure && formik.errors.tenure}
+                        label="Tenure"
+                        margin="normal"
+                        name="tenure"
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        type="tenure"
+                        value={formik.values.tenure}
+                        variant="outlined"
+                      />
+                    </Grid>
+                    <Grid item md={9} />
+                    <Grid item md={3}>
+                      <Button
+                        color="primary"
+                        disabled={formik.isSubmitting}
+                        fullWidth
+                        size="large"
+                        type="submit"
+                        variant="contained"
+                      >
+                        Transfer
+                      </Button>
+                    </Grid>
                   </Grid>
-                  <Grid item md={6} xs={12}>
-                    <TextField
-                      error={Boolean(formik.touched.amount && formik.errors.amount)}
-                      fullWidth
-                      helperText={formik.touched.amount && formik.errors.amount}
-                      label="Amount"
-                      margin="normal"
-                      name="amount"
-                      onBlur={formik.handleBlur}
-                      onChange={formik.handleChange}
-                      type="amount"
-                      value={formik.values.amount}
-                      variant="outlined"
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      sx={{ margin: "0" }}
-                      error={Boolean(formik.touched.message && formik.errors.message)}
-                      fullWidth
-                      helperText={formik.touched.message && formik.errors.message}
-                      label="Message"
-                      margin="normal"
-                      name="message"
-                      onBlur={formik.handleBlur}
-                      onChange={formik.handleChange}
-                      type="message"
-                      value={formik.values.message}
-                      variant="outlined"
-                    />
-                  </Grid>
-                  <Grid item md={9} />
-                  <Grid item md={3}>
-                    <Button
-                      color="primary"
-                      disabled={formik.isSubmitting}
-                      fullWidth
-                      size="large"
-                      type="submit"
-                      variant="contained"
-                    >
-                      Transfer
-                    </Button>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          </form>
+                </CardContent>
+              </Card>
+            </form>
+          ) : loanState === 1 ? (
+            <></>
+          ) : (
+            <></>
+          )}
         </Container>
       </Box>
     </>

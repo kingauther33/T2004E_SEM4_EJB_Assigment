@@ -27,6 +27,12 @@ export const useAPI = () => {
     getLogs: {
       url: BASE_URL + "logs",
     },
+    checkApproveLoan: {
+      url: BASE_URL + "loans/check_approve",
+    },
+    createLoan: {
+      url: BASE_URL + "loans",
+    },
   });
 
   useEffect(() => {

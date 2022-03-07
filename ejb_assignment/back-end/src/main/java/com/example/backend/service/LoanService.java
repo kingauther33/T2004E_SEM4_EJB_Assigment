@@ -84,9 +84,9 @@ public class LoanService {
 
         Account account = accountRepository.findFirstByUsername(currentPrincipalName).orElse(null);
 
+        // Rate co dinh la 5%, Tenure co dinh la 12 thang
         Loan loan = new Loan();
         loan.setAmount(loanDto.getAmount());
-        loan.setRate(loanDto.getRate());
         loan.setTenure(loanDto.getTenure());
         loan.setStatus("PROCESSING");
         loan.setApprovedDate(approvedDate);

@@ -84,7 +84,7 @@ const BankStatement = ({ ...rest }) => {
   return (
     <>
       <Head>
-        <title>Dashboard | Material Kit</title>
+        <title>Bank Statement</title>
       </Head>
       <Box
         component="main"

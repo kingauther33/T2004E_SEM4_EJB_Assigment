@@ -44,16 +44,16 @@ public class LoanApi {
     }
 
     // API cho user
-    @RequestMapping(path = "check_approve", method = RequestMethod.POST)
+    @RequestMapping(path = "check_approve", method = RequestMethod.GET)
     public ResponseEntity<Object> checkApprove(Principal principal) {
         Loan loan = loanService.checkApprove(principal.getName());
 
         if (loan == null) {
-            return new ResponseEntity<>("Cannot find any loan", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Cannot find any loan", HttpStatus.NOT_FOUND); // 404
         }
 
         if (loan.getStatus().equals("PROCESSING")) {
-            return new ResponseEntity<>(loan.getApprovedDate(), HttpStatus.PROCESSING);
+            return new ResponseEntity<>(loan.getApprovedDate(), HttpStatus.BAD_REQUEST); // 400
         }
 
         return new ResponseEntity<>(loan, HttpStatus.OK);
@@ -66,7 +66,7 @@ public class LoanApi {
         return new ResponseEntity<>(loan.getApprovedDate(), HttpStatus.OK);
     }
 
-    @RequestMapping(path = "calculate", method = RequestMethod.POST)
+    @RequestMapping(path = "calculate", method = RequestMethod.GET)
     public ResponseEntity<Object> calculate(Principal principal) {
         double amountPerMonth = loanService.calculate(principal.getName());
 

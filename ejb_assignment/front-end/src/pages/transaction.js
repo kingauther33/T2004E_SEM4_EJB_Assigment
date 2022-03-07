@@ -88,7 +88,7 @@ const Transaction = ({ ...rest }) => {
   return (
     <>
       <Head>
-        <title>Dashboard | Material Kit</title>
+        <title>Transaction</title>
       </Head>
       <Box
         component="main"
