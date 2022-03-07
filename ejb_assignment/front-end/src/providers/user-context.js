@@ -1,5 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
+import axios from "axios";
+import { useAPI } from "src/hooks/useAPI";
+import { addToLocalStorage } from "src/utils/add-to-localstorage";
 
 const UserContext = createContext({
   userInfo: "",
@@ -8,6 +11,7 @@ const UserContext = createContext({
 
 export default function UserContextProvider({ children }) {
   const router = useRouter();
+  const { API } = useAPI();
   const { pathname } = router;
   const inLoginOrRegister = pathname.includes("register") || pathname.includes("login");
   const [userInfo, setUserInfo] = useState({
@@ -58,6 +62,28 @@ export default function UserContextProvider({ children }) {
       router.replace("/register");
     }
   }, [inLoginOrRegister, pathname, router]);
+
+  // fetch lại account
+  useEffect(() => {
+    const fetchAccount = async () => {
+      await axios
+        .get(API.getUserByToken.url, {
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            Authorization: userInfo.accessToken,
+          },
+        })
+        .then((res) => {
+          const { data } = res;
+          addToLocalStorage(data, setUserInfo, router);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    };
+
+    !!userInfo.accessToken && fetchAccount();
+  }, [API, router, userInfo.accessToken]);
 
   const _userApi = useMemo(() => {
     return { userInfo, setUserInfo };

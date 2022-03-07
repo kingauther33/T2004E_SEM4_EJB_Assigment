@@ -18,6 +18,9 @@ export const useAPI = () => {
     login: {
       url: BASE_URL + "accounts/login",
     },
+    getUserByToken: {
+      url: BASE_URL + "accounts/getByToken",
+    },
     getAccount: {
       url: BASE_URL + "accounts",
     },

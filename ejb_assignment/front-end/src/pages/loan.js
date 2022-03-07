@@ -30,27 +30,31 @@ import { useUser } from "src/providers/user-context";
 import { PerfectScrollbar } from "react-perfect-scrollbar";
 import { useAPI } from "src/hooks/useAPI";
 import axios from "axios";
+import { format, parseISO } from "date-fns";
 
 const Loan = ({ ...rest }) => {
   const { userInfo, setUserInfo } = useUser();
   const { API } = useAPI();
   const [isLoading, setIsLoading] = useState(true);
   const [loanState, setLoanState] = useState(0);
-  const [loanData, setLoanData] = useState(null);
+  const [loanData, setLoanData] = useState(new Date());
   // 0: NOT FOUND (404); 1: tìm thấy nhưng chưa approve (400); 2: tìm thấy và được approve (200)
 
   const fetchLoan = useCallback(async () => {
     await axios
       .get(API.checkApproveLoan.url, API.config)
       .then((res) => {
+        // set nợ nếu request thành công
         console.log(res);
         setIsLoading(false);
+        setLoanData(res.data);
         setLoanState(2);
       })
       .catch((error) => {
+        // set approvedDate vào nợ
         setIsLoading(false);
         if (error.response.status === 400) {
-          console.log(error.response.data);
+          setLoanData(error.response.data);
           setLoanState(1);
         }
         console.log(error);
@@ -77,15 +81,15 @@ const Loan = ({ ...rest }) => {
     onSubmit: async (values, helperFunc) => {
       const formData = {
         amount: values.amount,
-        message: values.tenure,
+        tenure: values.tenure,
       };
 
       await axios
         .post(API.createLoan.url, formData, API.config)
         .then((res) => {
-          // update userInfo khi ckhoan thanh cong
-          console.log(res);
-
+          // update loanData khi request loan
+          setLoanData(res.data);
+          setLoanState(1);
           helperFunc.setSubmitting(false);
         })
         .catch((err) => {
@@ -100,6 +104,8 @@ const Loan = ({ ...rest }) => {
     console.log(API.checkApproveLoan.url);
 
     API.config.headers.Authorization && fetchLoan();
+
+    return () => {};
   }, [API, fetchLoan]);
 
   return (
@@ -115,13 +121,13 @@ const Loan = ({ ...rest }) => {
         }}
       >
         <Container maxWidth={false}>
-          {isLoading ? (
-            "Loading ..."
-          ) : loanState === 0 ? (
-            <form onSubmit={formik.handleSubmit}>
-              <Card>
-                <CardHeader subheader="Request to get loan" title="Loan request" />
-                <CardContent>
+          <Card>
+            <CardHeader subheader="Request to get loan" title="Loan request" />
+            <CardContent>
+              {isLoading ? (
+                "Loading ..."
+              ) : loanState === 0 ? (
+                <form onSubmit={formik.handleSubmit}>
                   <Grid container spacing={3}>
                     <Grid item xs={12}>
                       <Typography variant="subtitle2">Current rate: 5%</Typography>
@@ -172,14 +178,17 @@ const Loan = ({ ...rest }) => {
                       </Button>
                     </Grid>
                   </Grid>
-                </CardContent>
-              </Card>
-            </form>
-          ) : loanState === 1 ? (
-            <></>
-          ) : (
-            <></>
-          )}
+                </form>
+              ) : loanState === 1 ? (
+                <Typography variant="body2" align="center" sx={{ color: "#ffc107" }}>
+                  Your loan will be approved by{" "}
+                  {loanData && format(parseISO(loanData), "dd/MM/yyyy")}
+                </Typography>
+              ) : (
+                <Grid></Grid>
+              )}
+            </CardContent>
+          </Card>
         </Container>
       </Box>
     </>
