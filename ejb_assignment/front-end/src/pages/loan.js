@@ -31,7 +31,7 @@ import { PerfectScrollbar } from "react-perfect-scrollbar";
 import { useAPI } from "src/hooks/useAPI";
 import axios from "axios";
 
-const Transaction = ({ ...rest }) => {
+const Loan = ({ ...rest }) => {
   const { userInfo, setUserInfo } = useUser();
   const { API } = useAPI();
 
@@ -71,7 +71,7 @@ const Transaction = ({ ...rest }) => {
           console.log(res);
           alert("Please go to Bank Statement to get values");
           // update userInfo khi ckhoan thanh cong
-          const newBalance = (+userInfo.balance) - (+formData.amount);
+          const newBalance = +userInfo.balance - +formData.amount;
           localStorage.setItem("balance", newBalance);
           setUserInfo((api) => ({ ...userInfo, balance: newBalance }));
 
@@ -174,6 +174,6 @@ const Transaction = ({ ...rest }) => {
   );
 };
 
-export default Transaction;
+export default Loan;
 
-Transaction.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+Loan.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;

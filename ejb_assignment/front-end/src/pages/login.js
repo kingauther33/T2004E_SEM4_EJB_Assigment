@@ -9,13 +9,14 @@ import { Facebook as FacebookIcon } from "../icons/facebook";
 import { Google as GoogleIcon } from "../icons/google";
 import { useEffect } from "react";
 import axios from "axios";
-import { API } from "src/api";
 import { addToLocalStorage } from "src/utils/add-to-localstorage";
 import { useUser } from "src/providers/user-context";
+import { useAPI } from "src/hooks/useAPI";
 
 const Login = () => {
   const { setUserInfo } = useUser();
   const router = useRouter();
+  const { API } = useAPI();
 
   const formik = useFormik({
     initialValues: {

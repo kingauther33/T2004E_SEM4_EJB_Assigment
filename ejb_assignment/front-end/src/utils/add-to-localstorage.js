@@ -1,4 +1,5 @@
 export const addToLocalStorage = (data, setUserInfo, router) => {
+  localStorage.setItem("id", data["id"]);
   localStorage.setItem("access_token", data["access_token"]);
   localStorage.setItem("username", data["username"]);
   localStorage.setItem("firstName", data["first_name"]);
@@ -7,6 +8,7 @@ export const addToLocalStorage = (data, setUserInfo, router) => {
   localStorage.setItem("balance", data["balance"]);
   localStorage.setItem("role", data["role"]);
   setUserInfo({
+    id: data["id"],
     accessToken: data["access_token"],
     username: data["username"],
     firstName: data["first_name"],

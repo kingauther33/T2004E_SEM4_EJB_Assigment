@@ -11,6 +11,7 @@ export default function UserContextProvider({ children }) {
   const { pathname } = router;
   const inLoginOrRegister = pathname.includes("register") || pathname.includes("login");
   const [userInfo, setUserInfo] = useState({
+    id: "",
     accessToken: "",
     username: "",
     firstName: "",
@@ -21,6 +22,7 @@ export default function UserContextProvider({ children }) {
   });
 
   useEffect(() => {
+    const id = localStorage.getItem("id");
     const accessToken = localStorage.getItem("access_token");
     const username = localStorage.getItem("username");
     const firstName = localStorage.getItem("firstName");
@@ -30,6 +32,7 @@ export default function UserContextProvider({ children }) {
     const role = localStorage.getItem("role");
 
     if (
+      !!id &&
       !!accessToken &&
       !!username &&
       !!firstName &&
@@ -39,11 +42,13 @@ export default function UserContextProvider({ children }) {
       !!role
     ) {
       setUserInfo({
+        id,
         accessToken,
         username,
         firstName,
         lastName,
         email,
+        balance,
         role,
       });
       if (inLoginOrRegister) {

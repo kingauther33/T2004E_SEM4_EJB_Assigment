@@ -28,14 +28,16 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useUser } from "src/providers/user-context";
 import PerfectScrollbar from "react-perfect-scrollbar";
-import { API } from "src/api";
-import { format } from "date-fns";
+import { useAPI } from "src/hooks/useAPI";
+import { format, parseISO } from "date-fns";
 import axios from "axios";
 
 const BankStatement = ({ ...rest }) => {
   const [logList, setLogList] = useState([]);
+  const { userInfo } = useUser();
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
+  const { API } = useAPI();
 
   const handleLimitChange = (event) => {
     setLimit(event.target.value);
@@ -45,20 +47,39 @@ const BankStatement = ({ ...rest }) => {
     setPage(newPage);
   };
 
+  const handleCssColor = (log) => {
+    console.log(log.type);
+    console.log(log.receiverId);
+    console.log(userInfo);
+    console.log(userInfo.id)
+    if (log.type === "TRANSACTION" && log.receiverId == userInfo.id) {
+      return "PLUS";
+    }
+
+    if (log.type === "TRANSACTION" && log.senderId == userInfo.id) {
+      return "MINUS";
+    }
+
+    if (log.type === "LOAN") {
+      return "PLUS";
+    }
+  };
+
   useEffect(() => {
     const fetchLogs = async () => {
       await axios
         .get(API.getLogs.url, API.config)
         .then((res) => {
           console.log(res);
-          debugger;
           setLogList(res.data);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+        });
     };
 
-    fetchLogs();
-  }, []);
+    API.config.headers.Authorization && fetchLogs();
+  }, [API]);
 
   return (
     <>
@@ -74,12 +95,13 @@ const BankStatement = ({ ...rest }) => {
       >
         <Container maxWidth={false}>
           <Typography color="inherit" variant="h2">
-            Bank Statement
+            Bank Statement:
           </Typography>
           <Grid item xs={12}>
             <Card {...rest}>
               <PerfectScrollbar>
                 <Box sx={{ minWidth: 1050 }}>
+                  <Typography variant="subtitle1">Balance: {userInfo.balance} $</Typography>
                   <Table>
                     <TableHead>
                       <TableRow>
@@ -90,19 +112,35 @@ const BankStatement = ({ ...rest }) => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {logList.slice(0, limit).map((log) => (
+                      {logList.slice(0, limit).map((log, idx) => (
                         <TableRow
-                          hover
+                          // hover
                           key={log.id}
-                          sx={{
-                            bgColor: log.type === "",
-                          }}
+                          sx={
+                            handleCssColor(log) === "MINUS"
+                              ? {
+                                  bgcolor: "indianred",
+                                  ":hover": {
+                                    bgcolor: "error.main",
+                                  },
+                                }
+                              : {
+                                  bgcolor: "lightgreen",
+                                  ":hover": {
+                                    bgcolor: "success.main",
+                                  },
+                                }
+                          }
+                          // sx={{ bgcolor: "red" }}
                         >
-                          <TableCell>{log.id}</TableCell>
-                          <TableCell>{log.amount} $</TableCell>
+                          <TableCell>{idx + 1}</TableCell>
+                          <TableCell>
+                            {handleCssColor(log) === "MINUS" ? "-" : "+"}
+                            {log.amount} $
+                          </TableCell>
                           <TableCell>{log.type}</TableCell>
-                          {/* <TableCell>{format(log.createdAt, "dd/MM/yyyy")}</TableCell> */}
-                          <TableCell>{log.createdAt}</TableCell>
+                          <TableCell>{format(parseISO(log.createdAt), "dd/MM/yyyy")}</TableCell>
+                          {/* <TableCell>{log.createdAt}</TableCell> */}
                         </TableRow>
                       ))}
                     </TableBody>

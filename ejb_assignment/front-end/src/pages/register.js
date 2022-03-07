@@ -15,13 +15,14 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
-import { API } from "src/api";
+import { useAPI } from "src/hooks/useAPI";
 import { addToLocalStorage } from "src/utils/add-to-localstorage";
 import { useUser } from "src/providers/user-context";
 
 const Register = () => {
   const { setUserInfo } = useUser();
   const router = useRouter();
+  const { API } = useAPI();
 
   const formik = useFormik({
     initialValues: {

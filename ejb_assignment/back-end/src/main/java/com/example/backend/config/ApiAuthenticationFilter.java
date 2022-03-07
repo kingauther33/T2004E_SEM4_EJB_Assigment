@@ -84,6 +84,7 @@ public class ApiAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Account account = optionalAccount.get();
 
         HashMap<String, String> map = new HashMap<>();
+        map.put("id", String.valueOf(account.getId()));
         map.put("access_token", accessToken);
         map.put("username", account.getUsername());
         map.put("first_name", account.getFirstName());
