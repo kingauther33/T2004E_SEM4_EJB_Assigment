@@ -18,67 +18,33 @@ import { NavItem } from "./nav-item";
 import PaidIcon from "@mui/icons-material/Paid";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
-
-const items = [
-  {
-    href: "/transaction",
-    icon: <PaidIcon fontSize="small" />,
-    title: "Transaction",
-  },
-  {
-    href: "/loan",
-    icon: <CreditCardIcon fontSize="small" />,
-    title: "Loan",
-  },
-  {
-    href: "/bank-statement",
-    icon: <ReceiptIcon fontSize="small" />,
-    title: "Bank Statement",
-  },
-  {
-    href: "/",
-    icon: <ChartBarIcon />,
-    title: "Dashboard",
-  },
-  {
-    href: "/customers",
-    icon: <UsersIcon fontSize="small" />,
-    title: "Customers",
-  },
-  {
-    href: "/products",
-    icon: <ShoppingBagIcon fontSize="small" />,
-    title: "Products",
-  },
-  {
-    href: "/account",
-    icon: <UserIcon fontSize="small" />,
-    title: "Account",
-  },
-  {
-    href: "/settings",
-    icon: <CogIcon fontSize="small" />,
-    title: "Settings",
-  },
-  {
-    href: "/login",
-    icon: <LockIcon fontSize="small" />,
-    title: "Login",
-  },
-  {
-    href: "/register",
-    icon: <UserAddIcon fontSize="small" />,
-    title: "Register",
-  },
-  {
-    href: "/404",
-    icon: <XCircleIcon fontSize="small" />,
-    title: "Error",
-  },
-];
+import { useUser } from "src/providers/user-context";
 
 export const DashboardSidebar = (props) => {
   const { open, onClose } = props;
+  const {userInfo} = useUser()
+  const items = !userInfo.isAdmin ?  [
+    {
+      href: "/transaction",
+      icon: <PaidIcon fontSize="small" />,
+      title: "Transaction",
+    },
+    {
+      href: "/loan",
+      icon: <CreditCardIcon fontSize="small" />,
+      title: "Loan",
+    },
+    {
+      href: "/bank-statement",
+      icon: <ReceiptIcon fontSize="small" />,
+      title: "Bank Statement",
+    },
+    
+  ] : [{
+      href: "/approve",
+      icon: <ChartBarIcon />,
+      title: "Approve",
+    },];
   const router = useRouter();
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up("lg"), {
     defaultMatches: true,

@@ -23,6 +23,7 @@ export default function UserContextProvider({ children }) {
     email: "",
     balance: "",
     role: "",
+    isAdmin: false,
   });
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function UserContextProvider({ children }) {
     const email = localStorage.getItem("email");
     const balance = localStorage.getItem("balance");
     const role = localStorage.getItem("role");
+    const isAdmin = role === "ADMIN";
 
     if (
       !!id &&
@@ -45,6 +47,7 @@ export default function UserContextProvider({ children }) {
       !!balance &&
       !!role
     ) {
+      // đã login
       setUserInfo({
         id,
         accessToken,
@@ -54,11 +57,18 @@ export default function UserContextProvider({ children }) {
         email,
         balance,
         role,
+        isAdmin,
       });
-      if (inLoginOrRegister) {
-        router.replace("/");
+
+      if (inLoginOrRegister && !isAdmin) {
+        router.replace("/transaction");
+      }
+
+      if (inLoginOrRegister && !isAdmin) {
+        router.replace("/approve")
       }
     } else if (!inLoginOrRegister) {
+      // chưa login
       router.replace("/register");
     }
   }, [inLoginOrRegister, pathname, router]);
@@ -66,6 +76,7 @@ export default function UserContextProvider({ children }) {
   // fetch lại account
   useEffect(() => {
     const fetchAccount = async () => {
+      console.log(userInfo.accessToken);
       await axios
         .get(API.getUserByToken.url, {
           headers: {
@@ -82,7 +93,7 @@ export default function UserContextProvider({ children }) {
         });
     };
 
-    !!userInfo.accessToken && fetchAccount();
+    userInfo.accessToken && fetchAccount();
   }, [API, router, userInfo.accessToken]);
 
   const _userApi = useMemo(() => {

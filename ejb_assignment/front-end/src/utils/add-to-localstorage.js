@@ -1,4 +1,8 @@
 export const addToLocalStorage = (data, setUserInfo, router) => {
+  if (!data["access_token"]) {
+    return;
+  }
+
   localStorage.setItem("id", data["id"]);
   localStorage.setItem("access_token", data["access_token"]);
   localStorage.setItem("username", data["username"]);
@@ -16,6 +20,7 @@ export const addToLocalStorage = (data, setUserInfo, router) => {
     email: data["email"],
     balance: data["balance"],
     role: data["role"],
+    isAdmin: data["role"] === "ADMIN",
   });
 
   router.replace("/");

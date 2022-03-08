@@ -36,6 +36,12 @@ export const useAPI = () => {
     createLoan: {
       url: BASE_URL + "loans",
     },
+    findAllLoan: {
+      url: BASE_URL + "loans/find_all",
+    },
+    approveLoan: {
+      url: BASE_URL + "loans/approve/", // + id
+    },
   });
 
   useEffect(() => {
