@@ -48,10 +48,6 @@ const BankStatement = ({ ...rest }) => {
   };
 
   const handleCssColor = (log) => {
-    console.log(log.type);
-    console.log(log.receiverId);
-    console.log(userInfo);
-    console.log(userInfo.id)
     if (log.type === "TRANSACTION" && log.receiverId == userInfo.id) {
       return "PLUS";
     }

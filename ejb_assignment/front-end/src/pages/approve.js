@@ -91,7 +91,7 @@ const ApproveLoan = ({ ...rest }) => {
   return (
     <>
       <Head>
-        <title>Bank Statement</title>
+        <title>Approve</title>
       </Head>
       <Box
         component="main"

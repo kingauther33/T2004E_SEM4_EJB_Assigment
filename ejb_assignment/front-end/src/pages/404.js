@@ -2,9 +2,12 @@ import Head from 'next/head';
 import NextLink from 'next/link';
 import { Box, Button, Container, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useUser } from "src/providers/user-context";
 
-const NotFound = () => (
-  <>
+const NotFound = () => {
+const {userInfo} =  useUser();
+
+  return (<>
     <Head>
       <title>
         404 | Material Kit
@@ -55,7 +58,7 @@ const NotFound = () => (
             />
           </Box>
           <NextLink
-            href="/"
+            href={userInfo.isAdmin ? '/approve' : "/transaction"}
             passHref
           >
             <Button
@@ -70,7 +73,7 @@ const NotFound = () => (
         </Box>
       </Container>
     </Box>
-  </>
-);
+  </>)
+};
 
 export default NotFound;
